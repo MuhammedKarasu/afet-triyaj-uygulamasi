@@ -34,10 +34,9 @@ function SidebarContent({ user, close }: SidebarProps & { close?: () => void }) 
   const pathname = usePathname();
   const role = user.role as UserRole;
   return (
-    <div className="relative flex h-full flex-col overflow-hidden bg-[linear-gradient(165deg,#112b30_0%,#102328_56%,#0d1e23_100%)] text-white">
-      <div className="pointer-events-none absolute -right-28 top-12 h-64 w-64 rounded-full bg-brand-500/10 blur-3xl" />
-      <div className="relative flex h-20 items-center gap-3 border-b border-white/[.08] px-5">
-        <div className="grid h-11 w-11 place-items-center rounded-xl bg-gradient-to-br from-brand-500 to-emerald-600 shadow-lg shadow-black/20 ring-1 ring-white/10">
+    <div className="flex h-full flex-col overflow-hidden bg-[#102a2f] text-white">
+      <div className="flex h-20 items-center gap-3 border-b border-white/[.08] px-5">
+        <div className="grid h-11 w-11 place-items-center rounded-xl bg-brand-600 ring-1 ring-white/10">
           <Activity className="h-6 w-6" strokeWidth={2.4} />
         </div>
         <div>
@@ -46,7 +45,7 @@ function SidebarContent({ user, close }: SidebarProps & { close?: () => void }) 
         </div>
       </div>
 
-      <div className="relative mx-4 mt-5 rounded-2xl border border-emerald-300/10 bg-white/[.055] p-3.5 shadow-inner shadow-black/5">
+      <div className="mx-4 mt-5 rounded-xl border border-white/[.08] bg-white/[.045] p-3.5">
         <div className="flex items-center gap-2.5 text-xs font-semibold text-emerald-50/90">
           <span className="pulse-dot ml-1 h-2 w-2 rounded-full bg-emerald-400 text-emerald-400" />
           <span>Operasyon aktif</span>
@@ -58,7 +57,7 @@ function SidebarContent({ user, close }: SidebarProps & { close?: () => void }) 
         </div>
       </div>
 
-      <nav className="relative mt-5 flex-1 space-y-5 overflow-y-auto px-3 pb-4">
+      <nav className="mt-5 flex-1 space-y-5 overflow-y-auto px-3 pb-4">
         {groups.map((group) => {
           const visibleItems = group.items.filter((item) => item.roles.includes(role));
           if (!visibleItems.length) return null;
@@ -72,7 +71,7 @@ function SidebarContent({ user, close }: SidebarProps & { close?: () => void }) 
                   <Link key={item.href} href={item.href} onClick={close}
                     className={cn(
                       "group relative flex h-11 items-center gap-3 overflow-hidden rounded-xl px-3 text-sm font-semibold transition duration-200",
-                      active ? "bg-gradient-to-r from-brand-500 to-brand-600 text-white shadow-lg shadow-black/15 ring-1 ring-white/10" : "text-white/58 hover:bg-white/[.06] hover:text-white",
+                      active ? "bg-brand-600 text-white ring-1 ring-white/10" : "text-white/58 hover:bg-white/[.06] hover:text-white",
                       item.primary && !active && "border border-emerald-300/10 bg-emerald-300/[.035] text-emerald-100/75"
                     )}
                   >
@@ -89,11 +88,11 @@ function SidebarContent({ user, close }: SidebarProps & { close?: () => void }) 
         })}
       </nav>
 
-      <div className="relative mx-3 mb-2 flex items-start gap-2.5 rounded-xl border border-white/[.07] bg-black/10 px-3 py-2.5">
+      <div className="mx-3 mb-2 flex items-start gap-2.5 rounded-xl border border-white/[.07] bg-black/10 px-3 py-2.5">
         <Ambulance className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-200/50" />
         <p className="text-[9px] leading-4 text-white/30">Eğitim modu aktiftir. Sistem çıktıları tıbbi teşhis değildir.</p>
       </div>
-      <div className="relative mx-3 mb-3 rounded-2xl border border-white/[.09] bg-white/[.05] p-3">
+      <div className="mx-3 mb-3 rounded-xl border border-white/[.09] bg-white/[.05] p-3">
         <div className="flex items-center gap-3">
           <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-50/10 text-sm font-extrabold text-emerald-100 ring-1 ring-emerald-200/10">{initials(user.name)}</div>
           <div className="min-w-0 flex-1">

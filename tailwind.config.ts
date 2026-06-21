@@ -4,6 +4,9 @@ const config: Config = {
   content: ["./src/**/*.{js,ts,jsx,tsx,mdx}"],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ["Inter Variable", "Inter", "ui-sans-serif", "system-ui", "sans-serif"],
+      },
       colors: {
         ink: "#17212b",
         canvas: "#f4f7f9",
@@ -25,4 +28,3 @@ const config: Config = {
 };
 
 export default config;
-

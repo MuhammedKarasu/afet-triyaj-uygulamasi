@@ -1,0 +1,88 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            String         @id @default(cuid())
+  name          String
+  email         String         @unique
+  password      String
+  role          String         @default("VOLUNTEER")
+  createdAt     DateTime       @default(now())
+  patients      Patient[]
+  interventions Intervention[]
+}
+
+model Patient {
+  id                 String           @id @default(cuid())
+  fullName           String
+  age                Int
+  gender             String
+  identityNumber     String?
+  pulse              Int
+  spo2               Int
+  respiratoryStatus  String
+  consciousness      String
+  bleeding           String
+  canWalk            Boolean
+  hasLifeSigns       Boolean          @default(true)
+  locationDescription String
+  latitude           Float?
+  longitude          Float?
+  notes              String?
+  riskLevel          String
+  riskReason         String
+  interventionStatus String           @default("WAITING")
+  createdAt          DateTime         @default(now())
+  updatedAt          DateTime         @updatedAt
+  createdById        String
+  createdBy          User             @relation(fields: [createdById], references: [id])
+  interventions      Intervention[]
+  assignments        TeamAssignment[]
+
+  @@index([riskLevel])
+  @@index([interventionStatus])
+  @@index([createdAt])
+}
+
+model Intervention {
+  id        String   @id @default(cuid())
+  status    String
+  note      String?
+  createdAt DateTime @default(now())
+  patientId String
+  patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  authorId  String
+  author    User     @relation(fields: [authorId], references: [id])
+
+  @@index([patientId, createdAt])
+}
+
+model Team {
+  id          String           @id @default(cuid())
+  name        String           @unique
+  members     String
+  region      String
+  isActive    Boolean          @default(true)
+  createdAt   DateTime         @default(now())
+  assignments TeamAssignment[]
+}
+
+model TeamAssignment {
+  id         String   @id @default(cuid())
+  assignedAt DateTime @default(now())
+  completedAt DateTime?
+  teamId     String
+  team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
+  patientId  String
+  patient    Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+
+  @@unique([teamId, patientId])
+  @@index([patientId])
+}
+

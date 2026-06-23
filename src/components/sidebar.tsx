@@ -40,8 +40,8 @@ function SidebarContent({ user, close }: SidebarProps & { close?: () => void }) 
           <Activity className="h-6 w-6" strokeWidth={2.4} />
         </div>
         <div>
-          <div className="text-[17px] font-extrabold tracking-[.08em]">AFETRİYAJ</div>
-          <div className="text-[9px] font-semibold tracking-[.16em] text-emerald-100/50">AKILLI SAHA PLATFORMU</div>
+          <div className="text-[17px] font-extrabold tracking-[.02em]">AfetSaha</div>
+          <div className="text-[8px] font-semibold tracking-[.12em] text-emerald-100/50">ACİL DURUM VE SAHA YÖNETİMİ</div>
         </div>
       </div>
 

@@ -1,6 +1,6 @@
 {
-  "name": "afet-triyaj-yonetim-sistemi",
-  "version": "1.0.0",
+  "name": "afetsaha-web",
+  "version": "3.0.0",
   "private": true,
   "scripts": {
     "dev": "next dev",

@@ -9,7 +9,7 @@ export function Topbar({ user }: { user: { name: string; role: string } }) {
     <header className="sticky top-0 z-20 flex h-20 items-center border-b border-slate-200/80 bg-white/85 px-4 backdrop-blur-xl sm:px-7 lg:px-9">
       <div className="ml-14 lg:ml-0">
         <p className="text-xs font-medium capitalize text-slate-400">{today}</p>
-        <p className="mt-0.5 hidden text-sm font-semibold text-slate-700 sm:block">Afet Operasyon Merkezi</p>
+        <p className="mt-0.5 hidden text-sm font-semibold text-slate-700 sm:block">AfetSaha Operasyon Merkezi</p>
       </div>
       <div className="ml-auto flex items-center gap-2 sm:gap-3">
         <button className="relative grid h-10 w-10 place-items-center rounded-xl border border-slate-200 text-slate-500 transition hover:bg-slate-50" aria-label="Bildirimler">
@@ -32,4 +32,3 @@ export function Topbar({ user }: { user: { name: string; role: string } }) {
     </header>
   );
 }
-

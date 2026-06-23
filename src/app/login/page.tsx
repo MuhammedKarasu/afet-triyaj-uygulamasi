@@ -22,7 +22,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <div className="absolute -bottom-44 -left-40 h-[480px] w-[480px] rounded-full bg-cyan-500/10 blur-3xl" />
         <div className="relative z-10 flex items-center gap-3">
           <div className="grid h-12 w-12 place-items-center rounded-2xl bg-brand-500 shadow-xl shadow-black/20"><Activity className="h-7 w-7" /></div>
-          <div><p className="text-xl font-black tracking-[.08em]">AFETRİYAJ</p><p className="text-[10px] font-semibold tracking-[.2em] text-emerald-100/50">DİJİTAL SAHA YÖNETİMİ</p></div>
+          <div><p className="text-xl font-black tracking-tight">AfetSaha</p><p className="text-[9px] font-semibold tracking-[.14em] text-emerald-100/50">ACİL DURUM VE SAHA YÖNETİMİ</p></div>
         </div>
 
         <div className="relative z-10 my-auto max-w-xl py-12">
@@ -43,7 +43,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
 
       <section className="flex items-center justify-center bg-slate-50/60 px-5 py-10 sm:px-10">
         <div className="w-full max-w-md">
-          <div className="mb-8 flex items-center gap-3 lg:hidden"><div className="grid h-11 w-11 place-items-center rounded-xl bg-brand-600 text-white"><Activity className="h-6 w-6" /></div><div><p className="font-black tracking-wider">AFETRİYAJ</p><p className="text-[9px] tracking-[.18em] text-slate-400">SAHA YÖNETİMİ</p></div></div>
+          <div className="mb-8 flex items-center gap-3 lg:hidden"><div className="grid h-11 w-11 place-items-center rounded-xl bg-brand-600 text-white"><Activity className="h-6 w-6" /></div><div><p className="font-black tracking-tight">AfetSaha</p><p className="text-[8px] tracking-[.12em] text-slate-400">ACİL DURUM VE SAHA YÖNETİMİ</p></div></div>
           <p className="text-[11px] font-extrabold uppercase tracking-[.2em] text-brand-600">Güvenli erişim</p>
           <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-900">Operasyon paneline giriş</h2>
           <p className="mt-2 text-sm leading-6 text-slate-500">Yetkinize göre kişiselleştirilmiş saha ekranına erişin.</p>
@@ -78,4 +78,3 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
     </main>
   );
 }
-

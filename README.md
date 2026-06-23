@@ -1,8 +1,100 @@
-# AFETRİYAJ — Afet Sonrası Akıllı Dijital Triyaj ve Ekip Yönetimi
+# AfetSaha — Acil Durum ve Saha Yönetimi
 
-AFETRİYAJ; deprem ve afet sonrasında sahadaki yaralıların hızla kayıt altına alınmasını, temel sağlık verilerine göre otomatik triyaj önceliği oluşturulmasını ve saha ekiplerinin müdahale sürecini tek panelden yönetmesini sağlayan eğitim amaçlı bir karar destek uygulamasıdır.
+AfetSaha; deprem ve afet sonrasında sahadaki yaralıların hızla kayıt altına alınmasını, temel sağlık verilerine göre otomatik triyaj önceliği oluşturulmasını ve saha ekiplerinin müdahale sürecini yönetmesini sağlayan eğitim amaçlı bir karar destek sistemidir. Repo, mevcut Next.js web panelini ve V3.0 Expo mobil uygulamasını birlikte içerir.
 
 > **Tıbbi uyarı:** Bu proje tıbbi teşhis sistemi değildir. Üretilen risk seviyesi eğitim ve karar destek amaçlıdır; yetkili sağlık personelinin klinik değerlendirmesinin yerine geçmez.
+
+## V3.0 Mobil Sürüm Açıklaması
+
+V3.0 ile web uygulaması korunurken [`mobile/`](mobile/) klasöründe iPhone odaklı, gerçek React Native uygulaması eklendi. Mobil sürüm App Store veya TestFlight kullanmadan Expo Go içinde çalışır.
+
+- iPhone safe area, notch ve home indicator uyumlu yerleşim
+- Ana Sayfa, Kayıt Ekle, Yaralılar, Ekipler ve Profil alt sekmeleri
+- Dört adımlı, tek elle kullanıma uygun hızlı yaralı kaydı
+- Web sürümüyle aynı kırmızı/sarı/yeşil/siyah-gri risk kuralları
+- Yaralı detayı, risk gerekçesi ve ayrı müdahale güncelleme akışı
+- AsyncStorage ile cihazda kalıcı demo verileri ve çevrimdışı kullanım
+- Splash, giriş, logo ve illüstrasyon için marka yerleşimleri
+
+## iPhone'da Çalıştırma Rehberi
+
+Bu akış için Mac, Xcode, Apple geliştirici hesabı, App Store yayını veya TestFlight gerekmez.
+
+1. iPhone'da App Store'u açın ve **Expo Go** uygulamasını kurun/güncelleyin.
+2. Bilgisayar ve iPhone'u aynı Wi-Fi ağına bağlayın.
+3. PowerShell veya terminalde proje klasörüne, ardından mobil klasöre geçin:
+
+```powershell
+cd C:\Users\karas\Documents\Afetyönetimimobiluygulama\mobile
+```
+
+4. Bağımlılıkları kurun ve Expo geliştirme sunucusunu başlatın:
+
+```bash
+npm install
+npx expo start --lan
+```
+
+Kısa komut olarak `npm run start:lan` da kullanılabilir.
+
+5. Terminalde veya açılan Expo geliştirici ekranında görünen QR kodunu iPhone Kamera uygulamasıyla okutun.
+6. Bildirime dokunun ve bağlantıyı **Expo Go** ile açın.
+7. AfetSaha splash ekranından sonra **Demo kullanıcı ile devam et** seçeneğini kullanın.
+
+Windows Güvenlik Duvarı ilk çalıştırmada ağ izni sorarsa özel ağlar için Node.js/Expo erişimine izin verin. QR kodu açılmıyorsa iki cihazın aynı ağda olduğunu ve VPN'in kapalı olduğunu kontrol edin.
+
+### Expo Go ile test adımları
+
+1. Demo kullanıcıyla giriş yapın.
+2. Alt menüden **Kayıt Ekle** sekmesini açın.
+3. Nabız `138`, SpO₂ `86` ve kanama durumunu **Şiddetli** girin.
+4. Son adımda canlı risk analizinin **Kırmızı** olduğunu gösterin.
+5. Kaydı tamamlayıp yaralı detayındaki risk gerekçesini açın.
+6. **Müdahale durumunu güncelle** ile durumu **Müdahale Edildi** yapın.
+7. Ana Sayfa metriklerinin ve müdahale geçmişinin güncellendiğini gösterin.
+
+## Mobil demo kullanıcı bilgileri
+
+| Alan | Değer |
+|---|---|
+| E-posta | `admin@afet.local` |
+| Parola | `Admin123!` |
+| Rol | Admin |
+
+Mobil giriş ekranındaki hızlı demo düğmesi aynı hesabı otomatik açar.
+
+## Mobil kullanılan teknolojiler
+
+| Katman | Teknoloji |
+|---|---|
+| Mobil uygulama | Expo SDK 56, React Native, TypeScript |
+| Navigasyon | Expo Router, alt sekme + stack/modal akışı |
+| Form ve doğrulama | React Hook Form, Zod |
+| Yerel veri | AsyncStorage |
+| Arayüz | React Native StyleSheet tasarım sistemi, Expo Vector Icons |
+
+## Logo ve görsel alanları
+
+Mobil giriş ve splash ekranlarında tasarım bozulmadan kullanılabilecek placeholder alanlar bulunur. Kaynak dosya beklentileri [`mobile/assets/placeholders/README.md`](mobile/assets/placeholders/README.md) içinde belgelenmiştir.
+
+- Uygulama logosu: `1024 × 1024`
+- Giriş illüstrasyonu: `1600 × 2000`
+- Splash / launch tasarımı: `1290 × 2796`
+
+## Bilinen sırlamalar
+
+- Mobil veriler yalnızca kullanılan iPhone/Expo Go cihazında saklanır; web SQLite veritabanıyla otomatik senkronize edilmez.
+- Expo geliştirme sunucusunun ilk açılışta çalışıyor olması gerekir. JavaScript paketi yüklendikten sonra yerel demo verileri çevrimdışı kalır.
+- Uygulama App Store/TestFlight dağıtımı için yapılandırılmamıştır.
+- Gerçek kimlik doğrulama, çoklu cihaz senkronizasyonu ve merkezi denetim kaydı bu demo sürümünün dışındadır.
+
+## V3.0 gelecek geliştirmeler
+
+- Web ve mobil arasında güvenli API tabanlı senkronizasyon
+- Expo Location ile izinli GPS konum alma ve gerçek harita
+- QR bileklik, fotoğraf eki ve çevrimdışı işlem kuyruğu
+- Bildirimler ve ekip görev kabul akışı
+- Kurumsal logo/illüstrasyon dosyalarının nihai tasarımlarla değiştirilmesi
 
 ## Öne çıkan özellikler
 

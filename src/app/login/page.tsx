@@ -2,6 +2,7 @@ import { Activity, ArrowRight, CheckCircle2, HeartPulse, LockKeyhole, Radio, Shi
 import { redirect } from "next/navigation";
 import { loginAction } from "@/app/actions";
 import { getCurrentUser } from "@/lib/auth";
+import { PwaInstallHint } from "@/components/pwa-install-hint";
 
 const demos = [
   { role: "Admin", email: "admin@afet.local", password: "Admin123!", icon: ShieldCheck, color: "bg-emerald-50 text-emerald-700" },
@@ -15,7 +16,7 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
   const { hata } = await searchParams;
 
   return (
-    <main className="grid min-h-screen bg-white lg:grid-cols-[1.04fr_.96fr]">
+    <main className="grid min-h-dvh bg-white lg:grid-cols-[1.04fr_.96fr]">
       <section className="relative hidden overflow-hidden bg-[#10282d] p-12 text-white lg:flex lg:flex-col xl:p-16">
         <div className="grid-surface absolute inset-0 opacity-40" />
         <div className="absolute -right-36 -top-36 h-[430px] w-[430px] rounded-full bg-brand-500/20 blur-3xl" />
@@ -41,8 +42,9 @@ export default async function LoginPage({ searchParams }: { searchParams: Promis
         <p className="relative z-10 flex items-center gap-2 text-[11px] text-white/30"><CheckCircle2 className="h-4 w-4 text-emerald-300/60" /> Eğitim ve karar destek amaçlı demo sistemidir.</p>
       </section>
 
-      <section className="flex items-center justify-center bg-slate-50/60 px-5 py-10 sm:px-10">
+      <section className="flex items-center justify-center bg-slate-50/60 px-5 pb-[calc(2.5rem+env(safe-area-inset-bottom))] pt-[calc(2.5rem+env(safe-area-inset-top))] sm:px-10 lg:py-10">
         <div className="w-full max-w-md">
+          <PwaInstallHint />
           <div className="mb-8 flex items-center gap-3 lg:hidden"><div className="grid h-11 w-11 place-items-center rounded-xl bg-brand-600 text-white"><Activity className="h-6 w-6" /></div><div><p className="font-black tracking-tight">AfetSaha</p><p className="text-[8px] tracking-[.12em] text-slate-400">ACİL DURUM VE SAHA YÖNETİMİ</p></div></div>
           <p className="text-[11px] font-extrabold uppercase tracking-[.2em] text-brand-600">Güvenli erişim</p>
           <h2 className="mt-2 text-3xl font-black tracking-tight text-slate-900">Operasyon paneline giriş</h2>

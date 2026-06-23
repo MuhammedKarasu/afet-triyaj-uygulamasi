@@ -1,12 +1,73 @@
 # AfetSaha — Acil Durum ve Saha Yönetimi
 
-AfetSaha; deprem ve afet sonrasında sahadaki yaralıların hızla kayıt altına alınmasını, temel sağlık verilerine göre otomatik triyaj önceliği oluşturulmasını ve saha ekiplerinin müdahale sürecini yönetmesini sağlayan eğitim amaçlı bir karar destek sistemidir. Repo, mevcut Next.js web panelini ve V3.0 Expo mobil uygulamasını birlikte içerir.
+AfetSaha; deprem ve afet sonrasında sahadaki yaralıların hızla kayıt altına alınmasını, temel sağlık verilerine göre otomatik triyaj önceliği oluşturulmasını ve saha ekiplerinin müdahale sürecini yönetmesini sağlayan eğitim amaçlı bir karar destek sistemidir. V3.1 ile Next.js web paneli iPhone ana ekranına kurulabilen PWA'ya dönüştürülmüş, V3.0 Expo denemesi ise [`mobile/`](mobile/) klasöründe korunmuştur.
 
 > **Tıbbi uyarı:** Bu proje tıbbi teşhis sistemi değildir. Üretilen risk seviyesi eğitim ve karar destek amaçlıdır; yetkili sağlık personelinin klinik değerlendirmesinin yerine geçmez.
 
-## V3.0 Mobil Sürüm Açıklaması
+## V3.1 PWA iPhone Kurulum Rehberi
 
-V3.0 ile web uygulaması korunurken [`mobile/`](mobile/) klasöründe iPhone odaklı, gerçek React Native uygulaması eklendi. Mobil sürüm App Store veya TestFlight kullanmadan Expo Go içinde çalışır.
+V3.1'in önerilen mobil kullanımı PWA'dır. App Store, TestFlight, Apple Developer hesabı ve Expo Go gerekmez. Uygulama HTTPS ile yayınlandıktan sonra iPhone Safari üzerinden ana ekrana eklenir.
+
+1. Projeyi Vercel'e veya HTTPS sunan başka bir Next.js sunucusuna deploy edin.
+2. iPhone'da **Safari** ile yayın adresini açın.
+3. Safari alt araç çubuğundaki **Paylaş** düğmesine dokunun.
+4. Listeden **Ana Ekrana Ekle** seçeneğini seçin.
+5. Uygulama adının **AfetSaha** olduğunu kontrol edin.
+6. Sağ üstteki **Ekle** düğmesine dokunun.
+7. iPhone ana ekranındaki AfetSaha ikonundan uygulamayı açın.
+
+Ana ekran sürümü `display: standalone`, portre yönü, iOS safe-area boşlukları ve AfetSaha tema rengiyle açılır. Safari adres çubuğu yerine uygulama benzeri bir pencere kullanır.
+
+### PWA kapsamı
+
+- App Router tabanlı `/manifest.webmanifest`
+- `192x192`, `512x512`, `180x180` Apple ve `512x512` maskable ikonlar
+- iOS `apple-mobile-web-app-*`, tema rengi ve `viewport-fit=cover` metadata'sı
+- Production ortamında otomatik kaydedilen `/sw.js` service worker
+- Next.js statik varlıkları için runtime cache ve bağlantı yokken açılan temel offline kabuk
+- Safari'de gösterilen **Paylaş → Ana Ekrana Ekle** kurulum ipucu
+
+Service worker güvenlik nedeniyle güncel yaralı/sağlık verisi sayfalarını HTML olarak cache'lemez. Offline durumda uygulama kabuğu açılır; güncel veriler ve yazma işlemleri için ağ bağlantısı gerekir.
+
+## Vercel deploy
+
+### GitHub üzerinden
+
+1. Repoyu GitHub'a gönderin.
+2. Vercel panelinde **Add New → Project** ile repoyu içe aktarın.
+3. Framework ayarını **Next.js**, root directory değerini repo kökü olarak bırakın.
+4. `SESSION_SECURE=true` ortam değişkenini ekleyin.
+5. Production için kalıcı veritabanı bağlantısını yapılandırın ve deploy edin.
+
+### Vercel CLI ile
+
+```bash
+npm install -g vercel
+vercel
+vercel --prod
+```
+
+Repo kökündeki [`vercel.json`](vercel.json) Next.js install ve build komutlarını tanımlar.
+
+> **Vercel ve SQLite notu:** Mevcut `file:./dev.db` SQLite yapısı yerel demo için korunmuştur. Vercel'in serverless dosya sistemi kalıcı yazma depolaması değildir. Dashboard/kayıt/müdahale verilerinin production'da kalıcı olması için deploy öncesinde yönetilen bir veritabanına geçilmelidir. Bu V3.1 değişikliği mevcut Prisma/SQLite geliştirme akışını bozmaz.
+
+## PWA ikonlarını değiştirme
+
+Geçici AfetSaha ikonu [`public/icons/`](public/icons/) altındadır. Kendi logonuzu eklerken aşağıdaki dosyaları **aynı adlarla** değiştirin:
+
+| Dosya | Boyut | Kullanım |
+|---|---:|---|
+| `icon-1024.png` | 1024x1024 | Ana logo kaynağı |
+| `icon-192.png` | 192x192 | PWA küçük ikon |
+| `icon-512.png` | 512x512 | PWA ana ikon |
+| `apple-touch-icon.png` | 180x180 | iPhone ana ekran ikonu |
+| `maskable-icon-512.png` | 512x512 | Android/maskable ikon |
+
+PNG dosyaları kare, tam opak ve kenarlara taşan bir arka plana sahip olmalıdır. Maskable ikonda ana sembolü orta güvenli alan içinde tutun. Değişiklikten sonra production build'i yeniden alın ve iPhone'daki eski ana ekran kısayolunu silip tekrar ekleyin.
+
+## V3.0 Expo Mobil Sürümü (Korunan Arşiv)
+
+V3.0 ile oluşturulan Expo/React Native denemesi silinmemiştir ve [`mobile/`](mobile/) klasöründe korunur. V3.1 PWA akışında Expo Go artık gerekli veya önerilen kurulum yolu değildir.
 
 - iPhone safe area, notch ve home indicator uyumlu yerleşim
 - Ana Sayfa, Kayıt Ekle, Yaralılar, Ekipler ve Profil alt sekmeleri
@@ -16,7 +77,7 @@ V3.0 ile web uygulaması korunurken [`mobile/`](mobile/) klasöründe iPhone oda
 - AsyncStorage ile cihazda kalıcı demo verileri ve çevrimdışı kullanım
 - Splash, giriş, logo ve illüstrasyon için marka yerleşimleri
 
-## iPhone'da Çalıştırma Rehberi
+## V3.0 Expo Go ile Çalıştırma (Opsiyonel)
 
 Bu akış için Mac, Xcode, Apple geliştirici hesabı, App Store yayını veya TestFlight gerekmez.
 
@@ -130,6 +191,7 @@ Mobil giriş ve splash ekranlarında tasarım bozulmadan kullanılabilecek place
 | Veritabanı | SQLite, Prisma ORM |
 | Grafik | Recharts 3 |
 | Sunucu | Next.js Server Actions ve Route Handlers |
+| PWA | Web App Manifest, custom service worker, iOS standalone metadata |
 
 ## Kurulum
 
@@ -172,6 +234,27 @@ npm run dev
 ```
 
 Terminalde `Ready` mesajı göründüğünde tarayıcıda [http://localhost:3000](http://localhost:3000) adresini açın. Geliştirme sunucusunu durdurmak için `Ctrl+C` kullanın.
+
+### Bilgisayar ve iPhone'da yerel ağ testi
+
+Sunucuyu yalnızca bilgisayara değil aynı Wi-Fi ağındaki cihazlara da açmak için:
+
+```bash
+npm run dev -- -H 0.0.0.0
+```
+
+- Bilgisayarda: `http://localhost:3000/login`
+- iPhone Safari'de: `http://BILGISAYAR_IP_ADRESI:3000/login`
+
+Windows'ta bilgisayarın güncel yerel IPv4 adresini görmek için:
+
+```powershell
+Get-NetIPAddress -AddressFamily IPv4 | Where-Object { $_.IPAddress -like '192.168.*' -or $_.IPAddress -like '10.*' } | Select-Object IPAddress
+```
+
+Örneğin adres `192.168.0.9` ise iPhone'da `http://192.168.0.9:3000/login` açılır. Bilgisayar ve iPhone aynı Wi-Fi ağında olmalıdır. Windows Güvenlik Duvarı ilk çalıştırmada sorarsa Node.js için yalnızca **Özel ağlar** erişimine izin verin.
+
+Yerel HTTP adresi Safari görünüm ve responsive testleri içindir. iPhone'da service worker ve **Ana Ekrana Ekle** akışını güvenilir biçimde sınamak için Vercel gibi HTTPS sunan production adresini kullanın.
 
 Projede npm tarafından üretilmiş `package-lock.json` bulunduğu için sonraki temiz kurulumlarda `npm ci` de kullanılabilir:
 
@@ -270,6 +353,10 @@ Birden fazla bulgu bulunduğunda en yüksek öncelik seçilir ve ilgili tüm ger
 prisma/
   schema.prisma       # Veritabanı şeması
   seed.ts             # Sunuma hazır demo verileri
+public/
+  icons/              # 1024/512/192/180 px PWA ikon seti
+  sw.js               # Production service worker
+  offline.html        # Temel çevrimdışı kabuk
 src/
   app/
     (dashboard)/      # Korumalı uygulama ekranları
@@ -293,6 +380,13 @@ npm run start
 
 `npm run start`, production build tamamlandıktan sonra uygulamayı [http://localhost:3000](http://localhost:3000) üzerinde çalıştırır.
 
+Production sunucusu açıkken aşağıdaki PWA adresleri de `200` yanıtı vermelidir:
+
+- `http://localhost:3000/manifest.webmanifest`
+- `http://localhost:3000/sw.js`
+- `http://localhost:3000/offline.html`
+- `http://localhost:3000/icons/apple-touch-icon.png`
+
 Proje; temiz `npm install`, Prisma kurulumu, TypeScript kontrolü, production build ve `npm run dev` üzerinden giriş → kırmızı triyaj kaydı → dashboard güncellemesi → müdahale tamamlama akışıyla doğrulanmıştır.
 
 ## Sık karşılaşılan sorunlar
@@ -308,6 +402,23 @@ npm run dev -- -p 3001
 ```
 
 Bu durumda uygulamayı `http://localhost:3001` adresinden açın.
+
+### Sayfa düz HTML gibi görünüyor veya eski tasarım açılıyor
+
+V3.1 öncesinden kalmış bir service worker ya da `.next` çıktısı eski CSS/JavaScript dosyalarına işaret ediyor olabilir. Geliştirme sürümü service worker kaydını ve yalnızca `afetsaha-*` PWA cache'lerini otomatik temizler; kontrol edilen eski bir sekme varsa bir kez yeniler. Sorun sürerse:
+
+1. Çalışan Next.js sunucularını `Ctrl+C` ile durdurun.
+2. Proje kökünde geliştirme çıktısını temizleyin:
+
+```powershell
+Remove-Item -Recurse -Force .next
+npm run dev -- -H 0.0.0.0
+```
+
+3. Tarayıcı sekmesini kapatıp `http://localhost:3000/login` adresini yeniden açın.
+4. iPhone'da eski ana ekran kısayolu kullanılıyorsa kısayolu silin; Safari'de site verilerini temizleyip HTTPS production adresinden yeniden ekleyin.
+
+Production service worker sürümlü cache kullanır ve CSS/JavaScript varlıklarında önce ağı dener. Yeni deploy sonrasında `/sw.js` yeniden doğrulanır; böylece eski build dosyaları erişilebilir ağ varken arayüzü gölgeleyemez.
 
 ### Windows'ta Prisma `EPERM` hatası
 

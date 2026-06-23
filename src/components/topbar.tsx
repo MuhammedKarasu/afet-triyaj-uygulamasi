@@ -6,7 +6,7 @@ import { ROLES, type UserRole } from "@/lib/constants";
 export function Topbar({ user }: { user: { name: string; role: string } }) {
   const today = new Intl.DateTimeFormat("tr-TR", { weekday: "long", day: "numeric", month: "long" }).format(new Date());
   return (
-    <header className="sticky top-0 z-20 flex h-20 items-center border-b border-slate-200/80 bg-white/85 px-4 backdrop-blur-xl sm:px-7 lg:px-9">
+    <header className="sticky top-0 z-20 flex h-[calc(5rem+env(safe-area-inset-top))] items-center border-b border-slate-200/80 bg-white/90 px-4 pt-[env(safe-area-inset-top)] backdrop-blur-xl sm:px-7 lg:h-20 lg:px-9 lg:pt-0">
       <div className="ml-14 lg:ml-0">
         <p className="text-xs font-medium capitalize text-slate-400">{today}</p>
         <p className="mt-0.5 hidden text-sm font-semibold text-slate-700 sm:block">AfetSaha Operasyon Merkezi</p>

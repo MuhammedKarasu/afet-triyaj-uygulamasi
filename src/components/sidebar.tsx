@@ -92,7 +92,7 @@ function SidebarContent({ user, close }: SidebarProps & { close?: () => void }) 
         <Ambulance className="mt-0.5 h-3.5 w-3.5 shrink-0 text-emerald-200/50" />
         <p className="text-[9px] leading-4 text-white/30">Eğitim modu aktiftir. Sistem çıktıları tıbbi teşhis değildir.</p>
       </div>
-      <div className="mx-3 mb-3 rounded-xl border border-white/[.09] bg-white/[.05] p-3">
+      <div className="mx-3 mb-[calc(.75rem+env(safe-area-inset-bottom))] rounded-xl border border-white/[.09] bg-white/[.05] p-3 lg:mb-3">
         <div className="flex items-center gap-3">
           <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-emerald-50/10 text-sm font-extrabold text-emerald-100 ring-1 ring-emerald-200/10">{initials(user.name)}</div>
           <div className="min-w-0 flex-1">
@@ -111,12 +111,12 @@ export function Sidebar({ user }: SidebarProps) {
   return (
     <>
       <aside className="fixed inset-y-0 left-0 z-30 hidden w-64 lg:block"><SidebarContent user={user} /></aside>
-      <button onClick={() => setOpen(true)} className="fixed left-4 top-4 z-30 grid h-11 w-11 place-items-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm lg:hidden" aria-label="Menüyü aç">
+      <button onClick={() => setOpen(true)} className="fixed left-4 top-[calc(1rem+env(safe-area-inset-top))] z-30 grid h-11 w-11 place-items-center rounded-xl border border-slate-200 bg-white text-slate-700 shadow-sm lg:hidden" aria-label="Menüyü aç">
         <Menu className="h-5 w-5" />
       </button>
       {open && <div className="fixed inset-0 z-40 bg-slate-950/50 backdrop-blur-sm lg:hidden" onClick={() => setOpen(false)} />}
       <aside className={cn("fixed inset-y-0 left-0 z-50 w-72 transition-transform duration-300 lg:hidden", open ? "translate-x-0" : "-translate-x-full")}>
-        <button onClick={() => setOpen(false)} className="absolute right-3 top-3 z-10 grid h-9 w-9 place-items-center rounded-lg bg-white/10 text-white" aria-label="Menüyü kapat"><X className="h-5 w-5" /></button>
+        <button onClick={() => setOpen(false)} className="absolute right-3 top-[calc(.75rem+env(safe-area-inset-top))] z-10 grid h-9 w-9 place-items-center rounded-lg bg-white/10 text-white" aria-label="Menüyü kapat"><X className="h-5 w-5" /></button>
         <SidebarContent user={user} close={() => setOpen(false)} />
       </aside>
     </>

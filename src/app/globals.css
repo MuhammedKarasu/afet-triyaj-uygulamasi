@@ -56,6 +56,46 @@ body {
   .btn-secondary {
     @apply inline-flex h-12 items-center justify-center gap-2 rounded-xl border border-slate-200 bg-white px-4 text-sm font-semibold text-slate-700 transition hover:border-slate-300 hover:bg-slate-50 focus:outline-none focus:ring-4 focus:ring-slate-200/60;
   }
+
+  .field-map-pin {
+    @apply grid place-items-center rounded-full border-[3px] border-white text-[10px] font-black text-white shadow-lg ring-4 ring-white/35;
+    width: 34px;
+    height: 34px;
+  }
+
+  .field-map-pin-patient {
+    box-shadow: 0 12px 26px rgba(15, 23, 42, .22);
+  }
+
+  .field-map-pin-team {
+    @apply bg-blue-600;
+    width: 32px;
+    height: 32px;
+  }
+
+  .field-map-popup {
+    @apply min-w-52 space-y-1 text-xs text-slate-600;
+  }
+
+  .field-map-popup h3 {
+    @apply text-sm font-extrabold text-slate-900;
+  }
+
+  .field-map-popup b {
+    @apply font-extrabold text-slate-700;
+  }
+
+  .field-map-code {
+    @apply font-mono text-[10px] font-black tracking-wide text-brand-700;
+  }
+
+  .field-map-actions {
+    @apply mt-3 grid grid-cols-2 gap-2;
+  }
+
+  .field-map-actions a {
+    @apply rounded-lg bg-brand-600 px-3 py-2 text-center text-[11px] font-bold text-white transition hover:bg-brand-700;
+  }
 }
 
 .grid-surface {

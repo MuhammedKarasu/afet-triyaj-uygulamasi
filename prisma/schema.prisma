@@ -16,10 +16,13 @@ model User {
   createdAt     DateTime       @default(now())
   patients      Patient[]
   interventions Intervention[]
+  caseEvents    CaseEvent[]
+  assignmentsMade TeamAssignment[] @relation("AssignmentCreatedBy")
 }
 
 model Patient {
   id                 String           @id @default(cuid())
+  caseCode           String?          @unique
   fullName           String
   age                Int
   gender             String
@@ -38,11 +41,16 @@ model Patient {
   riskLevel          String
   riskReason         String
   interventionStatus String           @default("WAITING")
+  statusNote         String?
+  transferDestination String?
+  lastStatusUpdateAt DateTime         @default(now())
+  archivedAt         DateTime?
   createdAt          DateTime         @default(now())
   updatedAt          DateTime         @updatedAt
   createdById        String
   createdBy          User             @relation(fields: [createdById], references: [id])
   interventions      Intervention[]
+  caseEvents          CaseEvent[]
   assignments        TeamAssignment[]
 
   @@index([riskLevel])
@@ -50,10 +58,26 @@ model Patient {
   @@index([createdAt])
 }
 
+model CaseEvent {
+  id          String   @id @default(cuid())
+  eventType   String
+  title       String
+  description String?
+  createdAt   DateTime @default(now())
+  patientId   String
+  patient     Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  createdById String
+  createdBy   User     @relation(fields: [createdById], references: [id])
+
+  @@index([patientId, createdAt])
+  @@index([createdAt])
+}
+
 model Intervention {
   id        String   @id @default(cuid())
   status    String
   note      String?
+  destination String?
   createdAt DateTime @default(now())
   patientId String
   patient   Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
@@ -68,21 +92,33 @@ model Team {
   name        String           @unique
   members     String
   region      String
+  status      String           @default("AVAILABLE")
+  latitude    Float?
+  longitude   Float?
+  available   Boolean          @default(true)
   isActive    Boolean          @default(true)
   createdAt   DateTime         @default(now())
   assignments TeamAssignment[]
+
+  @@index([status])
+  @@index([available])
 }
 
 model TeamAssignment {
   id         String   @id @default(cuid())
   assignedAt DateTime @default(now())
   completedAt DateTime?
+  status     String   @default("ASSIGNED")
+  note       String?
   teamId     String
   team       Team     @relation(fields: [teamId], references: [id], onDelete: Cascade)
   patientId  String
   patient    Patient  @relation(fields: [patientId], references: [id], onDelete: Cascade)
+  assignedById String?
+  assignedBy   User?   @relation("AssignmentCreatedBy", fields: [assignedById], references: [id])
 
   @@unique([teamId, patientId])
   @@index([patientId])
+  @@index([status])
+  @@index([assignedById])
 }
-

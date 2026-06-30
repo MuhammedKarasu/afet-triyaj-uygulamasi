@@ -12,7 +12,7 @@ const pinColor: Record<string,string> = { RED:"bg-red-600",YELLOW:"bg-amber-500"
 
 export default async function LocationsPage() {
   await requireUser();
-  const patients = await prisma.patient.findMany({ orderBy: { createdAt: "desc" }, include: { assignments: { include: { team: { select: { name: true } } } } } });
+  const patients = await prisma.patient.findMany({ where: { interventionStatus: { in: ["WAITING", "IN_PROGRESS"] } }, orderBy: { createdAt: "desc" }, include: { assignments: { include: { team: { select: { name: true } } } } } });
   const mapped = patients.filter(p=>p.latitude!==null && p.longitude!==null);
   const minLat = Math.min(...mapped.map(p=>p.latitude!), 38.41), maxLat = Math.max(...mapped.map(p=>p.latitude!),38.43);
   const minLng = Math.min(...mapped.map(p=>p.longitude!),27.12), maxLng = Math.max(...mapped.map(p=>p.longitude!),27.14);

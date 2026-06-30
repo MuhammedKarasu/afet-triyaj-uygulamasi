@@ -4,6 +4,102 @@ AfetSaha; deprem ve afet sonrasında sahadaki yaralıların hızla kayıt altın
 
 > **Tıbbi uyarı:** Bu proje tıbbi teşhis sistemi değildir. Üretilen risk seviyesi eğitim ve karar destek amaçlıdır; yetkili sağlık personelinin klinik değerlendirmesinin yerine geçmez.
 
+## V3.5 Harita, Konum ve Ekip Atama Güncellemesi
+
+V3.5, V3.4'teki aktif/geçmiş vaka ayrımı, vaka kodu ve timeline yapısını bozmadan uygulamaya gerçekçi saha koordinasyonu katmanı ekler.
+
+- `/map` adresinde **Saha Haritası** eklendi. Aktif vakalar Leaflet + OpenStreetMap üzerinde risk rengine göre pinlenir.
+- Harita popup'larında vaka kodu, ad soyad, risk seviyesi, müdahale durumu, konum açıklaması, **Detaya Git** ve **Ekip Ata** bağlantıları bulunur.
+- Vaka kayıt formunda koordinat alanları korunarak **Mevcut konumu al** butonu eklendi. Konum izni reddedilirse kullanıcı manuel enlem/boylam girebilir.
+- Ekip modeline durum, uygunluk ve koordinat alanları eklendi; ekip kartlarında görev bölgesi, uygunluk, aktif görev sayısı ve **Haritada göster** bağlantısı yer alır.
+- Vaka detay ekranında **Atanan Ekip**, **Ekip Atama Geçmişi**, **En Yakın Uygun Ekip Önerileri** ve `/map?patientId=...` odaklı harita bağlantısı bulunur.
+- Ekip atanınca `TeamAssignment` kaydı not, atayan kullanıcı ve durum bilgisiyle tutulur; timeline'a “ekip vakaya atandı” olayı eklenir.
+- Atama durumları **Atandı / Yolda / Olay Yerinde / Tamamlandı / İptal Edildi** olarak yönetilebilir.
+- Dashboard'a konumu belirlenmiş/konumsuz aktif vaka, ekip atanmış/bekleyen aktif vaka, uygun ekip ve görevdeki ekip özetleri eklendi.
+- Mobil bottom navigation artık **Ana Sayfa / Aktif Vakalar / Yeni Kayıt / Harita / Geçmiş** düzenindedir.
+
+Mevcut V3.4 veritabanını kayıt silmeden V3.5 alanlarına geçirmek için geliştirme sunucusu kapalıyken:
+
+```bash
+npm run db:upgrade:v35
+```
+
+Harita OpenStreetMap/Leaflet altyapısıyla çalışır. Harita sağlayıcısının kullanım koşullarına uyulmalıdır. Bu sistem eğitim ve demo amaçlıdır; hassas gerçek konum verisiyle kullanılmamalıdır.
+
+### V3.5 test senaryosu
+
+1. Admin olarak giriş yap.
+2. Yeni vaka oluştur.
+3. Konum açıklaması gir.
+4. Enlem/boylam gir veya **Mevcut konumu al** butonunu kullan.
+5. Sistem risk analizi yapsın.
+6. Vaka `/patients` aktif listesinde görünsün.
+7. `/map` ekranına git.
+8. Vaka risk rengine göre haritada görünsün.
+9. Pin'e tıkla; popup içinde vaka kodu ve risk bilgisi görünsün.
+10. **Ekip Ata** bağlantısıyla detaydaki ekip atama alanına git.
+11. Uygun ekiplerden birini not girerek ata.
+12. Vaka detayında atanan ekip görünsün.
+13. Timeline'da ekip atama event'i görünsün.
+14. Dashboard'da ekip atanmış aktif vaka sayısı artsın.
+15. Koordinat varsa en yakın ekip önerisi gösterilsin.
+
+## V3.4 Operasyon İyileştirmeleri
+
+V3.4, V3.3'teki aktif/geçmiş vaka ayrımını değiştirmeden operasyon takibini daha izlenebilir ve hızlı hale getirir.
+
+- Her vakaya `AS-2026-0001` biçiminde yıllık ve benzersiz bir **vaka kodu** atanır. Kod; aktif/geçmiş kartlarında, detay ekranında, dashboard hareketlerinde ve aramada kullanılır.
+- `CaseEvent` tabanlı **Süreç Geçmişi**; kayıt oluşturma, risk atama ve tüm durum değişikliklerini kullanıcı/zaman bilgisiyle saklar.
+- Detay ekranındaki **Hızlı İşlem** düğmeleri Müdahale Ediliyor, Müdahale Edildi, Sevk Edildi, Taburcu Edildi ve Vefat Etti geçişlerini kısa not isteyen mobil uyumlu bir modal üzerinden gerçekleştirir.
+- Dashboard **Son Hareketler** alanı son vaka olaylarını, vaka kodunu ve işlemi yapan kullanıcıyı gösterir.
+- **Günlük operasyon özeti** bugünkü yeni kayıt, müdahale, sevk ve aktif kırmızı sayılarını gerçek veriden üretir.
+- Aktif vaka sıralaması Kırmızı/Sarı/Yeşil risk ve Bekliyor/Müdahale Ediliyor önceliğini korur; geçmiş kayıtlar son güncelleme zamanına göre sıralanır.
+- `/history` filtreleri durum pill'leri, risk seviyesi ve vaka kodu/isim/konum aramasını birlikte destekler.
+- Aktif, geçmiş ve filtrelenmiş boş sonuçlar için ayrı açıklayıcı mesajlar bulunur.
+
+Mevcut V3.3 veritabanını kayıt silmeden yükseltmek, vaka kodlarını üretmek ve geçmiş müdahalelerden timeline olaylarını oluşturmak için geliştirme sunucusu kapalıyken:
+
+```bash
+npm run db:upgrade:v34
+```
+
+Komut, yeni benzersiz vaka kodu indeksini oluştururken Prisma'nın güvenlik uyarısını kontrollü biçimde kabul eder; migration mevcut vakaları silmez.
+
+## V3.3 Müdahale Durumu ve Vaka Geçmişi Güncellemesi
+
+V3.3 ile tıbbi triyaj önceliğini belirten **risk seviyesi** ile sahadaki operasyon akışını belirten **müdahale durumu** arayüzde ve sorgularda net biçimde ayrıldı.
+
+- `/patients` yalnızca **Bekliyor** ve **Müdahale Ediliyor** durumundaki aktif vakaları gösterir.
+- **Müdahale Edildi**, **Sevk Edildi**, **Taburcu Edildi** ve **Vefat Etti** durumları `/history` Vaka Geçmişi ekranında saklanır.
+- Sonuçlanan kayıtlar silinmez; risk seviyesi, durum notları, sevk kurumu ve zaman damgalı müdahale geçmişi korunur.
+- Yetkili kullanıcı bir geçmiş kaydı not ekleyerek tekrar Bekliyor veya Müdahale Ediliyor durumuna alabilir.
+- Dashboard aktif bekleyen, devam eden ve aktif risk sayılarını; sonuçlanan dört durumdan ayrı gösterir.
+- Vaka Geçmişi durum/risk filtresi, isim-konum araması ve tarih sıralaması sunar.
+- Mobil alt navigasyon beş slotu koruyarak **Ana Sayfa / Aktif Vakalar / Yeni Kayıt / Geçmiş / Profil** düzenine geçmiştir.
+- Masaüstü sidebar'da Vaka Geçmişi bağlantısı bulunur; ekip ve konum ekranları aktif operasyon kayıtlarına odaklanır.
+
+Mevcut V3.2 veritabanını kayıt silmeden V3.3 alanlarına geçirmek ve eski `COMPLETED` değerlerini `TREATED` olarak normalleştirmek için geliştirme sunucusu kapalıyken çalıştırın:
+
+```bash
+npm run db:upgrade:v33
+```
+
+Yeni demo kurulumu için standart `npm run db:setup` komutu güncel V3.3 durumlarına sahip örnek verileri hazırlar.
+
+## V3.2 Mobil Alt Navigasyon Güncellemesi
+
+V3.2 ile korumalı uygulama ekranlarına iPhone/PWA kullanımını hızlandıran modern bir mobil alt navigasyon eklendi.
+
+- **Ana Sayfa**, **Yaralılar**, **Yeni Kayıt**, **Ekipler** ve **Profil** bölümlerine tek elle hızlı erişim sağlanır.
+- Ortadaki yükseltilmiş **Yeni Kayıt** aksiyonu doğrudan `/patients/new` triyaj formunu açar.
+- Aktif sekme renk, zemin ve küçük durum göstergesiyle belirginleşir.
+- Alt bar `env(safe-area-inset-bottom)` kullanarak iPhone home indicator alanından güvenli uzaklıkta kalır.
+- Sayfa içeriğine mobilde ek alt boşluk verildiği için son kartlar ve form düğmeleri menünün arkasında kalmaz.
+- Masaüstündeki sidebar/topbar korunur; kapsül menü `lg` breakpoint'inden itibaren gizlenir.
+- Rol sistemi korunur: Admin ve Sağlık Personeli **Ekipler** sekmesini, Gönüllü ise erişebildiği **Saha** sekmesini görür.
+
+Profil ekranı `/profile` adresinde aktif demo kullanıcısını, rol açıklamasını, uygulama sürümünü ve PWA durumunu gösterir.
+
 ## V3.1 PWA iPhone Kurulum Rehberi
 
 V3.1'in önerilen mobil kullanımı PWA'dır. App Store, TestFlight, Apple Developer hesabı ve Expo Go gerekmez. Uygulama HTTPS ile yayınlandıktan sonra iPhone Safari üzerinden ana ekrana eklenir.
@@ -190,6 +286,7 @@ Mobil giriş ve splash ekranlarında tasarım bozulmadan kullanılabilecek place
 | Form | React Hook Form, Zod |
 | Veritabanı | SQLite, Prisma ORM |
 | Grafik | Recharts 3 |
+| Harita | Leaflet + OpenStreetMap |
 | Sunucu | Next.js Server Actions ve Route Handlers |
 | PWA | Web App Manifest, custom service worker, iOS standalone metadata |
 
@@ -299,6 +396,9 @@ npm run db:seed
 
 # Şema ve seed işlemini birlikte çalıştır
 npm run db:setup
+
+# Mevcut V3.4 demo verisini V3.5 harita/ekip alanlarına yükselt
+npm run db:upgrade:v35
 ```
 
 Temel tablolar:

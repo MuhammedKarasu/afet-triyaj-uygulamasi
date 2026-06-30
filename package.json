@@ -1,6 +1,6 @@
 {
   "name": "afetsaha-web",
-  "version": "3.1.0",
+  "version": "3.5.0",
   "private": true,
   "scripts": {
     "dev": "next dev",
@@ -11,6 +11,9 @@
     "db:push": "prisma db push",
     "db:seed": "prisma db seed",
     "db:setup": "prisma db push && prisma db seed",
+    "db:upgrade:v33": "prisma db push && tsx prisma/migrate-v33.ts",
+    "db:upgrade:v34": "prisma db push --accept-data-loss && tsx prisma/migrate-v33.ts && tsx prisma/migrate-v34.ts",
+    "db:upgrade:v35": "prisma db push --accept-data-loss && tsx prisma/migrate-v33.ts && tsx prisma/migrate-v34.ts && tsx prisma/migrate-v35.ts",
     "demo": "prisma db push && prisma db seed && next dev",
     "postinstall": "prisma generate"
   },
@@ -18,7 +21,9 @@
     "@fontsource-variable/inter": "^5.2.8",
     "@hookform/resolvers": "^3.9.1",
     "@prisma/client": "^6.7.0",
+    "@types/leaflet": "^1.9.21",
     "clsx": "^2.1.1",
+    "leaflet": "^1.9.4",
     "lucide-react": "^0.468.0",
     "next": "^15.2.0",
     "react": "^19.0.0",

@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import {
-  Activity, Ambulance, ChevronRight, ClipboardPlus, HeartPulse,
+  Activity, Ambulance, ChevronRight, ClipboardPlus, HeartPulse, History,
   LayoutDashboard, MapPinned, Menu, RadioTower, ShieldCheck, Sparkles, Users, X,
 } from "lucide-react";
 import { cn, initials } from "@/lib/utils";
@@ -17,6 +17,8 @@ const groups = [
       { href: "/dashboard", label: "Genel Bakış", icon: LayoutDashboard, roles: ["ADMIN", "MEDIC", "VOLUNTEER"] },
       { href: "/patients", label: "Yaralı Kayıtları", icon: HeartPulse, roles: ["ADMIN", "MEDIC", "VOLUNTEER"] },
       { href: "/patients/new", label: "Yeni Triyaj", icon: ClipboardPlus, roles: ["ADMIN", "MEDIC", "VOLUNTEER"], primary: true },
+      { href: "/map", label: "Saha Haritası", icon: MapPinned, roles: ["ADMIN", "MEDIC", "VOLUNTEER"] },
+      { href: "/history", label: "Vaka Geçmişi", icon: History, roles: ["ADMIN", "MEDIC", "VOLUNTEER"] },
     ],
   },
   {

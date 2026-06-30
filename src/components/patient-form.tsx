@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { useForm } from "react-hook-form";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { Activity, AlertCircle, ArrowRight, Brain, Check, Droplets, HeartPulse, Loader2, MapPin, Navigation, ShieldAlert, UserRound, Wind } from "lucide-react";
+import { Activity, AlertCircle, ArrowRight, Brain, Check, Droplets, HeartPulse, Loader2, LocateFixed, MapPin, Navigation, ShieldAlert, UserRound, Wind } from "lucide-react";
 import { patientSchema, type PatientFormValues } from "@/lib/validations";
 import { calculateRisk } from "@/lib/risk";
 import { RISK } from "@/lib/constants";
@@ -18,6 +18,8 @@ export function PatientForm({ recorderName }: { recorderName: string }) {
   const router = useRouter();
   const [serverError, setServerError] = useState("");
   const [saving, setSaving] = useState(false);
+  const [locationLoading, setLocationLoading] = useState(false);
+  const [locationMessage, setLocationMessage] = useState("");
   const { register, handleSubmit, watch, setValue, formState: { errors } } = useForm<PatientFormValues>({
     resolver: zodResolver(patientSchema),
     defaultValues: {
@@ -49,6 +51,29 @@ export function PatientForm({ recorderName }: { recorderName: string }) {
       setServerError(error instanceof Error ? error.message : "Kayıt tamamlanamadı.");
       setSaving(false);
     }
+  }
+
+  function handleUseCurrentLocation() {
+    setLocationMessage("");
+    if (!navigator.geolocation) {
+      setLocationMessage("Konum alınamadı. Lütfen manuel konum girin.");
+      return;
+    }
+
+    setLocationLoading(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        setValue("latitude", Number(position.coords.latitude.toFixed(6)), { shouldValidate: true, shouldDirty: true });
+        setValue("longitude", Number(position.coords.longitude.toFixed(6)), { shouldValidate: true, shouldDirty: true });
+        setLocationMessage("Mevcut konum koordinatlara eklendi.");
+        setLocationLoading(false);
+      },
+      (error) => {
+        setLocationMessage(error.code === error.PERMISSION_DENIED ? "Konum izni verilmedi. Manuel konum girebilirsiniz." : "Konum alınamadı. Lütfen manuel konum girin.");
+        setLocationLoading(false);
+      },
+      { enableHighAccuracy: true, timeout: 10000, maximumAge: 30000 },
+    );
   }
 
   const riskTone = preview.level === "RED" ? "border-red-200 bg-red-50/70" : preview.level === "YELLOW" ? "border-amber-200 bg-amber-50/70" : preview.level === "GREEN" ? "border-emerald-200 bg-emerald-50/70" : "border-slate-300 bg-slate-100";
@@ -88,8 +113,21 @@ export function PatientForm({ recorderName }: { recorderName: string }) {
       <FormSection step={4} title="Konum ve saha notları" description="Ekibin yaralıya ulaşmasını kolaylaştıracak bilgiler" icon={MapPin}>
         <div className="grid gap-5 sm:grid-cols-2 lg:grid-cols-4">
           <div className="sm:col-span-2 lg:col-span-4"><label className="label" htmlFor="locationDescription">Konum açıklaması <b className="text-red-500">*</b></label><input id="locationDescription" className="input" placeholder="Örn. A Blok kuzey cephesi, merdiven girişi" {...register("locationDescription")}/>{errors.locationDescription && <p className={errorClass}><AlertCircle className="h-3 w-3"/>{errors.locationDescription.message}</p>}</div>
-          <div className="sm:col-span-1 lg:col-span-2"><label className="label" htmlFor="latitude">GPS enlem <span className="font-normal text-slate-400">(opsiyonel)</span></label><div className="relative"><Navigation className="absolute left-3 top-3.5 h-3.5 w-3.5 text-slate-400"/><input id="latitude" className="input pl-9" type="number" step="any" placeholder="38.4192" {...register("latitude")}/></div></div>
-          <div className="sm:col-span-1 lg:col-span-2"><label className="label" htmlFor="longitude">GPS boylam <span className="font-normal text-slate-400">(opsiyonel)</span></label><div className="relative"><Navigation className="absolute left-3 top-3.5 h-3.5 w-3.5 text-slate-400"/><input id="longitude" className="input pl-9" type="number" step="any" placeholder="27.1287" {...register("longitude")}/></div></div>
+          <div className="sm:col-span-2 lg:col-span-4 rounded-2xl border border-slate-200 bg-slate-50/70 p-4">
+            <div className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between">
+              <div>
+                <p className="text-sm font-extrabold text-slate-800">Koordinat bilgisi</p>
+                <p className="mt-1 text-xs leading-5 text-slate-500">İzin verilirse cihazın mevcut konumu alınır; izin verilmezse enlem/boylam manuel girilebilir.</p>
+              </div>
+              <button type="button" onClick={handleUseCurrentLocation} disabled={locationLoading} className="btn-secondary h-11 shrink-0">
+                {locationLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : <LocateFixed className="h-4 w-4" />}
+                Mevcut konumu al
+              </button>
+            </div>
+            {locationMessage && <p className={`mt-3 rounded-xl px-3 py-2 text-xs font-semibold ${locationMessage.includes("alınamadı") || locationMessage.includes("verilmedi") ? "bg-amber-50 text-amber-800" : "bg-emerald-50 text-emerald-800"}`}>{locationMessage}</p>}
+          </div>
+          <div className="sm:col-span-1 lg:col-span-2"><label className="label" htmlFor="latitude">GPS enlem <span className="font-normal text-slate-400">(opsiyonel)</span></label><div className="relative"><Navigation className="absolute left-3 top-3.5 h-3.5 w-3.5 text-slate-400"/><input id="latitude" className="input pl-9" type="number" step="any" placeholder="38.4192" {...register("latitude")}/></div>{errors.latitude && <p className={errorClass}>{errors.latitude.message}</p>}</div>
+          <div className="sm:col-span-1 lg:col-span-2"><label className="label" htmlFor="longitude">GPS boylam <span className="font-normal text-slate-400">(opsiyonel)</span></label><div className="relative"><Navigation className="absolute left-3 top-3.5 h-3.5 w-3.5 text-slate-400"/><input id="longitude" className="input pl-9" type="number" step="any" placeholder="27.1287" {...register("longitude")}/></div>{errors.longitude && <p className={errorClass}>{errors.longitude.message}</p>}</div>
           <div className="sm:col-span-2 lg:col-span-4"><label className="label" htmlFor="notes">Saha notu</label><textarea id="notes" className="textarea" placeholder="Gözlemler, yaralanma tipi, uygulanan ilk yardım..." {...register("notes")}/>{errors.notes && <p className={errorClass}>{errors.notes.message}</p>}</div>
         </div>
       </FormSection>

@@ -6,37 +6,46 @@ import { formatDate } from "@/lib/utils";
 
 export type PatientCardData = {
   id: string;
+  caseCode: string | null;
   fullName: string;
   riskLevel: string;
   interventionStatus: string;
   locationDescription: string;
   createdAt: Date;
+  lastStatusUpdateAt?: Date;
+  statusNote?: string | null;
+  transferDestination?: string | null;
   pulse: number;
   spo2: number;
+  assignments?: Array<{ completedAt?: Date | null; team: { name: string } }>;
 };
 
 const riskBorder: Record<string, string> = { RED: "border-l-rose-400", YELLOW: "border-l-amber-400", GREEN: "border-l-emerald-400", BLACK: "border-l-slate-500" };
 const riskAvatar: Record<string, string> = { RED: "bg-rose-50 text-rose-700", YELLOW: "bg-amber-50 text-amber-700", GREEN: "bg-emerald-50 text-emerald-700", BLACK: "bg-slate-100 text-slate-700" };
 
-export function PatientCard({ patient }: { patient: PatientCardData }) {
+export function PatientCard({ patient, mode = "active" }: { patient: PatientCardData; mode?: "active" | "history" }) {
   const initials = patient.fullName.split(" ").map((part) => part[0]).slice(0, 2).join("");
   const pulseAlert = patient.pulse > 130;
   const oxygenAlert = patient.spo2 < 90;
+  const activeTeams = patient.assignments?.filter((assignment) => !assignment.completedAt).map((assignment) => assignment.team.name) ?? [];
 
   return (
-    <Link href={`/patients/${patient.id}`} className={`panel group block border-l-[3px] p-4 transition hover:border-slate-300 hover:shadow-md sm:p-5 ${riskBorder[patient.riskLevel] ?? riskBorder.BLACK}`}>
+    <Link href={`/patients/${patient.id}${mode === "history" ? "?from=history" : ""}`} className={`panel group block border-l-[3px] p-4 transition hover:border-slate-300 hover:shadow-md sm:p-5 ${mode === "history" ? "border-l-slate-300 bg-white/90" : riskBorder[patient.riskLevel] ?? riskBorder.BLACK}`}>
       <div className="flex items-start gap-3.5">
         <div className={`grid h-11 w-11 shrink-0 place-items-center rounded-xl text-sm font-bold ${riskAvatar[patient.riskLevel] ?? riskAvatar.BLACK}`}>{initials}</div>
         <div className="min-w-0 flex-1">
-          <div className="flex flex-wrap items-center gap-2">
+          <div className="flex flex-wrap items-center gap-x-3 gap-y-2">
+            {patient.caseCode && <span className="rounded-md bg-slate-100 px-2 py-1 font-mono text-[9px] font-bold tracking-wide text-slate-500">{patient.caseCode}</span>}
             <h2 className="mr-1 truncate text-[15px] font-bold text-slate-900">{patient.fullName}</h2>
-            <RiskBadge level={patient.riskLevel} compact />
-            <StatusBadge status={patient.interventionStatus} />
+            <span className="inline-flex items-center gap-1.5"><span className="text-[9px] font-extrabold uppercase tracking-wide text-slate-400">Risk</span><RiskBadge level={patient.riskLevel} compact /></span>
+            <span className="inline-flex items-center gap-1.5"><span className="text-[9px] font-extrabold uppercase tracking-wide text-slate-400">Durum</span><StatusBadge status={patient.interventionStatus} /></span>
           </div>
           <div className="mt-2 flex flex-wrap items-center gap-x-4 gap-y-1.5 text-xs text-slate-500">
             <span className="flex min-w-0 items-center gap-1.5"><MapPin className="h-3.5 w-3.5 shrink-0 text-slate-400"/><span className="truncate">{patient.locationDescription}</span></span>
-            <span className="flex items-center gap-1.5"><Clock3 className="h-3.5 w-3.5 text-slate-400"/>{formatDate(patient.createdAt)}</span>
+            <span className="flex items-center gap-1.5"><Clock3 className="h-3.5 w-3.5 text-slate-400"/>{mode === "history" ? "Son durum: " : "Kayıt: "}{formatDate(mode === "history" && patient.lastStatusUpdateAt ? patient.lastStatusUpdateAt : patient.createdAt)}</span>
           </div>
+          {mode === "history" && (patient.statusNote || patient.transferDestination) && <p className="mt-2 line-clamp-2 text-xs leading-5 text-slate-500">{patient.transferDestination ? `${patient.transferDestination} • ` : ""}{patient.statusNote}</p>}
+          {mode === "active" && <p className="mt-2 inline-flex rounded-lg bg-blue-50 px-2.5 py-1.5 text-[11px] font-bold text-blue-700">{activeTeams.length ? `Atanan ekip: ${activeTeams.join(", ")}` : "Ekip bekliyor"}</p>}
           <div className="mt-3 flex items-center gap-2">
             <span className={`inline-flex items-center gap-1.5 rounded-lg bg-slate-50 px-2.5 py-1.5 text-[11px] font-semibold ${pulseAlert ? "text-rose-700" : "text-slate-600"}`}><HeartPulse className="h-3.5 w-3.5"/>Nabız {patient.pulse}</span>
             <span className={`inline-flex items-center gap-1.5 rounded-lg bg-slate-50 px-2.5 py-1.5 text-[11px] font-semibold ${oxygenAlert ? "text-rose-700" : "text-slate-600"}`}><Wind className="h-3.5 w-3.5"/>SpO₂ %{patient.spo2}</span>

@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import "@fontsource-variable/inter";
+import "leaflet/dist/leaflet.css";
 import "./globals.css";
 import { DevelopmentPwaReset } from "@/components/development-pwa-reset";
 import { ServiceWorkerRegister } from "@/components/service-worker-register";
@@ -35,7 +36,7 @@ export const viewport: Viewport = {
 
 export default function RootLayout({ children }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="tr">
+    <html lang="tr" data-scroll-behavior="smooth">
       <head>
         <DevelopmentPwaReset />
       </head>
